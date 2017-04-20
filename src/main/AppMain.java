@@ -2,6 +2,7 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+<<<<<<< HEAD
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,28 +12,32 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+=======
+>>>>>>> parent of 41ef3aa... no message
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
+<<<<<<< HEAD
 import org.xml.sax.SAXException;
 
 
 
 public class AppMain extends JFrame implements ActionListener{
+=======
+public class AppMain extends JFrame{
+>>>>>>> parent of 41ef3aa... no message
 	JPanel p_west,p_east;
 	JButton bt_xml, bt_oracle,bt_json;
 	JTextArea txt;
 	JTable table;
 	JScrollPane scroll;
+<<<<<<< HEAD
 	JFileChooser chooser;
 	MyModel model;
 	SAXParser parser;
@@ -42,6 +47,10 @@ public class AppMain extends JFrame implements ActionListener{
 	Connection con;
 	ArrayList<PetDto> pet = new ArrayList<PetDto>();
 	PetDto dto;
+=======
+	
+	
+>>>>>>> parent of 41ef3aa... no message
 	
 	public AppMain() {
 		p_west = new JPanel();
@@ -70,6 +79,7 @@ public class AppMain extends JFrame implements ActionListener{
 		add(p_west);
 		add(p_east);
 		
+<<<<<<< HEAD
 		
 		bt_json.addActionListener(this);
 		bt_oracle.addActionListener(this);
@@ -77,11 +87,14 @@ public class AppMain extends JFrame implements ActionListener{
 		
 		
 		
+=======
+>>>>>>> parent of 41ef3aa... no message
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(500, 500);
 		
 		
+<<<<<<< HEAD
 		
 	}
 	
@@ -201,6 +214,8 @@ public class AppMain extends JFrame implements ActionListener{
 			pet.clear();
 			xml();
 		}
+=======
+>>>>>>> parent of 41ef3aa... no message
 	}
 	
 	public static void main(String[] args) {

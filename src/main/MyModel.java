@@ -7,29 +7,15 @@ import javax.swing.table.AbstractTableModel;
 public class MyModel extends AbstractTableModel{
 
 	Vector<String> columnName = new Vector<String>();
-	//Vector<Vector> data = new Vector<Vector>();
-	Handler handler;
+	Vector<Vector> data = new Vector<Vector>();
 	
-	public MyModel(Handler handler) {
-		
-		this.handler=handler;
-		
-		
-		for(int i=0;i<handler.data.size();i++){
-			System.out.println(handler.data.get(i));
-			
-			
-			
-		}
-		for(int i=0;i<handler.columnName.size();i++){
-			columnName.addElement(handler.columnName.get(i));
-			System.out.println(handler.columnName.size()+"사이즈");
-		}
+	
+	public MyModel() {
 		
 		columnName.addElement("이름");
 		columnName.addElement("나이");
+		columnName.addElement("번호");
 		columnName.addElement("성별");
-		columnName.addElement("33");
 		
 	}
 	public String getColumnName(int col) {
@@ -38,16 +24,20 @@ public class MyModel extends AbstractTableModel{
 	
 	
 	public int getRowCount() {
-		return handler.data.size();
+		return data.size();
 	}
 
 	public int getColumnCount() {
 		return columnName.size();
 	}
+	
+	public void setColumnName(Vector<String> columnName) {
+		this.columnName = columnName;
+	}
 
 	public Object getValueAt(int row, int col) {
 		
-		return handler.data.get(row).get(col);
+		return data.get(row).get(col);
 	}
 
 }

@@ -11,45 +11,58 @@ import org.xml.sax.helpers.DefaultHandler;
 public class Handler extends DefaultHandler{
 	MyModel model;
 	Vector<String> vec;
-	Vector<String> columnName = new Vector<String>();
-	Vector<Vector> data = new Vector<Vector>();
-	String colName;
-	
-	//실행부가 어느 태그 위치에 와 있는지 여부를 체크하는 변수
-	boolean flag=true;
+	Vector<String> col_name;
+
 	boolean member;
 	boolean name;
 	boolean age;
 	boolean phone;
 	boolean gender;
 	
+	boolean pet;
+	boolean type;
+	
+	boolean car;
+	boolean brand;
+	boolean price;
+	boolean color;
+	
 	public Handler(MyModel model) {
 		this.model = model;
-		
 	}
 	
-	//시작 태그가 발견되면
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		//시작 태그중 <member>태그를 발견하면 Vector를 생성하자
-		
 		
 		if(qName.equalsIgnoreCase("member")){
 			vec = new Vector<String>();
 			member=true;
+		}	if(qName.equalsIgnoreCase("pet")){
+			vec = new Vector<String>();
+			pet=true;
+		}	if(qName.equalsIgnoreCase("car")){
+			vec = new Vector<String>();
+			car=true;
 		}	if(qName.equalsIgnoreCase("name")){
 			name=true;
 		}	if(qName.equalsIgnoreCase("age")){
 			age=true;
 		}	if(qName.equalsIgnoreCase("phone")){
 			phone=true;
+		}	if(qName.equalsIgnoreCase("type")){
+			type=true;
+		}	if(qName.equalsIgnoreCase("age")){
+			age=true;
+		}	if(qName.equalsIgnoreCase("brand")){
+			brand=true;
+		}	if(qName.equalsIgnoreCase("price")){
+			price=true;
+		}	if(qName.equalsIgnoreCase("color")){
+			color=true;
 		}	if(qName.equalsIgnoreCase("gender")){
 			gender=true;
-		}
-		
-		
+		}	
 	}
 	
-	//태그와 태그 사이의 텍스트가 발견되면 호출됨!!
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if(name){
 			vec.add(new String(ch, start, length));
@@ -63,23 +76,37 @@ public class Handler extends DefaultHandler{
 		}else if(gender){
 			vec.add(new String(ch, start, length));
 			gender=false;
+		}else if(type){
+			vec.add(new String(ch, start, length));
+			type=false;
+		}else if(brand){
+			vec.add(new String(ch, start, length));
+			brand=false;
+		}else if(price){
+			vec.add(new String(ch, start, length));
+			price=false;
+		}else if(color){
+			vec.add(new String(ch, start, length));
+			color=false;
 		}
 		
 	}
 	
-	//끝태그가 발견되면
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		System.out.println("</"+qName+">");
+		
 		
 		if(qName.equalsIgnoreCase("member")){
-			data.add(vec);
+			model.data.add(vec);
+
+		}else if(qName.equalsIgnoreCase("car")){
+			model.data.add(vec);
+
+		}else if(qName.equalsIgnoreCase("pet")){
+			model.data.add(vec);
+
 		}
-	
 	}
 	
-	public void endDocument() throws SAXException {
-		System.out.println("담겨진 총 명수는?? " + data.size());
-		
-	}
+
 	
 }

@@ -1,10 +1,16 @@
 package main;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -19,6 +25,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+
+
 public class AppMain extends JFrame implements ActionListener{
 	JPanel p_west,p_east;
 	JButton bt_xml, bt_oracle,bt_json;
@@ -26,8 +34,14 @@ public class AppMain extends JFrame implements ActionListener{
 	JTable table;
 	JScrollPane scroll;
 	JFileChooser chooser;
-	Handler handler;
 	MyModel model;
+	SAXParser parser;
+	SAXParserFactory factory;
+	Handler handler;
+	DBManager manager;
+	Connection con;
+	ArrayList<PetDto> pet = new ArrayList<PetDto>();
+	PetDto dto;
 	
 	public AppMain() {
 		p_west = new JPanel();
@@ -48,17 +62,19 @@ public class AppMain extends JFrame implements ActionListener{
 		p_west.add(bt_oracle);
 		p_west.add(scroll);
 		
-		p_east.add(bt_json);
-		p_east.add(txt);
+		p_east.setLayout(new BorderLayout());
+		p_east.add(bt_json,BorderLayout.NORTH);
+		p_east.add(txt,BorderLayout.CENTER);
 		
 		
 		add(p_west);
 		add(p_east);
 		
 		
-		bt_xml.addActionListener(this);
-		bt_oracle.addActionListener(this);
 		bt_json.addActionListener(this);
+		bt_oracle.addActionListener(this);
+		bt_xml.addActionListener(this);
+		
 		
 		
 		setVisible(true);
@@ -66,41 +82,22 @@ public class AppMain extends JFrame implements ActionListener{
 		setSize(500, 500);
 		
 		
-	}
-	
-	
-
-	public void actionPerformed(ActionEvent e) {
-		Object obj = e.getSource();
-		if(obj==bt_xml){
-			xml();
-		}else if(obj==bt_oracle){
-			
-		}else if(obj==bt_json){
-			
-		}
 		
 	}
 	
-	
 	public void xml(){
-		chooser=new JFileChooser("C:/java_workspace2/DataExchangeApp/data"); 
-		int result = chooser.showOpenDialog(this);
-		//model = new MyModel();
-		if(result==JFileChooser.APPROVE_OPTION){
+		chooser = new JFileChooser("C:/java_workspace2/DataExchangeApp/data");
+		int result =chooser.showOpenDialog(this);
+		model = new MyModel();
+		factory = SAXParserFactory.newInstance();
+		
+		
+		if(result == JFileChooser.APPROVE_OPTION){
 			File file = chooser.getSelectedFile();
-			System.out.println(file.getAbsolutePath());
-			
-			SAXParserFactory factory=null;
-			factory = SAXParserFactory.newInstance();
-			
-			
+			String path = file.getAbsolutePath();
 			try {
-				SAXParser parser = factory.newSAXParser();
-				parser.parse(file.getAbsolutePath(), handler = new Handler());
-				model = new MyModel(handler);
-				
-				
+				parser = factory.newSAXParser();
+				parser.parse(path, handler=new Handler(model));
 			} catch (ParserConfigurationException e) {
 				e.printStackTrace();
 			} catch (SAXException e) {
@@ -108,14 +105,103 @@ public class AppMain extends JFrame implements ActionListener{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			table.setModel(model);
-			table.updateUI();
+		}
+		table.setModel(model );
+		table.updateUI();
+	}
+	
+	
+	public void oracle(){
+		manager = DBManager.getInstance();
+		con = manager.getConnection();
+		PreparedStatement pstmt=null;
+		
+		String sql;
+		
+		try {
+		
+			 sql="delete from pet";
+			 pstmt=con.prepareStatement(sql);
+			 int result2= pstmt.executeUpdate();
 			
-			
+			for(int i=0;i<model.data.size();i++){
+				 sql="insert into pet(type,name,age,gender) values('"+model.data.get(i).get(0)+"','"+model.data.get(i).get(1)+"','"+model.data.get(i).get(2)+"','"+model.data.get(i).get(3)+"')";
+				pstmt = con.prepareStatement(sql);
+				int result = pstmt.executeUpdate();
+			}
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	
 	
+	
+	public void json(){
+		PreparedStatement pstmt =null;
+		ResultSet rs= null;
+		String sql = "select * from pet";
+		
+		for(int i=0;i<pet.size();i++){
+			pet.remove(i);
+			System.out.println("Áö¿ì´Ï");
+		}
+		
+		try {
+			pstmt = con.prepareStatement(sql);
+			rs =pstmt.executeQuery();
+			while(rs.next()){
+				dto = new PetDto();
+				dto.setName(rs.getString("name"));
+				dto.setGender(rs.getString("gender"));
+				dto.setAge(rs.getString("age"));
+				dto.setType(rs.getString("type"));
+				
+				
+				pet.add(dto);
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		System.out.println(pet.size());
+		
+		txt.setText("");
+		for(int i=0;i<pet.size();i++){
+			StringBuffer sb = new StringBuffer();
+			sb.append("{ \n");
+			sb.append(" \"name :"+pet.get(i).getType()+" \"\n");
+			sb.append(" \"type :"+pet.get(i).getName()+"\"\n");
+			sb.append(" \"age :"+pet.get(i).getAge()+"\"\n");
+			sb.append(" \"gender :"+pet.get(i).getGender()+"\"\n");
+			sb.append("}\n");
+			
+			
+			txt.append(sb.toString());
+		}
+		
+		
+		
+	}
+	
+	
+	public void actionPerformed(ActionEvent e) {
+		Object obj = e.getSource();
+		
+		if(obj==bt_json){
+			pet.clear();
+			json();
+		}else if(obj==bt_oracle){
+			pet.clear();
+			oracle();
+		}else if(obj==bt_xml){
+			pet.clear();
+			xml();
+		}
+	}
 	
 	public static void main(String[] args) {
 		new AppMain();
